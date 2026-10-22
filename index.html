@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TieOut Ops | Payment operations and reconciliation</title>
+<meta name="description" content="Payment operations and reconciliation consulting for fintechs, marketplaces and platforms. Fixed-scope audit, reconciliation buildout and fractional payment ops by Edgar Dacto.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;110,500;110,600;110,700;110,800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+  :root {
+    --paper:#EDF1EA; --surface:#F8FAF6; --sunk:#E3E9DE; --ink:#131A14; --ink-2:#5C665A; --ink-3:#838E80;
+    --rule:#C9D3C4; --rule-2:#A9B6A3; --accent:#9E2B25; --accent-2:#7C201C; --accent-soft:#F2DEDB;
+    --ok:#2E6B4F; --ok-soft:#DCEAE0; --warn:#96600F; --warn-soft:#F0E4CC;
+    --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+    --body:"Source Serif 4",Georgia,"Times New Roman",serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+    --measure:1120px; --gut:28px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:#0F130E; --surface:#171C15; --sunk:#1E241C; --ink:#E7EDE3; --ink-2:#9BA797; --ink-3:#78846F;
+      --rule:#2C3529; --rule-2:#3E4A3A; --accent:#E0736A; --accent-2:#EE9089; --accent-soft:#35211F;
+      --ok:#79C09B; --ok-soft:#1C2C23; --warn:#D7A75A; --warn-soft:#2C2517;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:#0F130E; --surface:#171C15; --sunk:#1E241C; --ink:#E7EDE3; --ink-2:#9BA797; --ink-3:#78846F;
+    --rule:#2C3529; --rule-2:#3E4A3A; --accent:#E0736A; --accent-2:#EE9089; --accent-soft:#35211F;
+    --ok:#79C09B; --ok-soft:#1C2C23; --warn:#D7A75A; --warn-soft:#2C2517;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--body); font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased; }
+  img { max-width:100%; }
+  .wrap { max-width:var(--measure); margin:0 auto; padding-inline:var(--gut); }
+  h1, h2, h3, .display { font-family:var(--display); font-variation-settings:"wdth" 110; font-weight:700; letter-spacing:-0.015em; text-wrap:balance; margin:0; }
+  .eyebrow { font-family:var(--mono); font-size:11.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-2); font-weight:500; }
+  a { color:inherit; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+
+  .masthead { border-bottom:1px solid var(--rule); background:var(--paper); position:sticky; top:0; z-index:10; }
+  .masthead .wrap { display:flex; align-items:center; justify-content:space-between; gap:18px; padding-block:14px; flex-wrap:wrap; }
+  .mark { font-family:var(--display); font-variation-settings:"wdth" 110; font-weight:800; font-size:17px; letter-spacing:0.02em; text-transform:uppercase; line-height:1; }
+  .mark span { display:block; font-family:var(--mono); font-size:10.5px; font-weight:400; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-2); margin-top:5px; }
+
+  .btn { font-family:var(--display); font-variation-settings:"wdth" 110; font-weight:600; font-size:14.5px; letter-spacing:0.005em; text-decoration:none; padding:11px 18px; border:1px solid var(--accent); background:var(--accent); color:#FFF6F5; display:inline-block; transition:background .15s ease, color .15s ease; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn { color:#1A0F0E; } }
+  :root[data-theme="dark"] .btn { color:#1A0F0E; }
+  .btn:hover { background:var(--accent-2); border-color:var(--accent-2); }
+  .btn-ghost { background:transparent; color:var(--ink); border-color:var(--rule-2); }
+  .btn-ghost:hover { background:var(--sunk); border-color:var(--ink-2); color:var(--ink); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn-ghost { color:var(--ink); } }
+  :root[data-theme="dark"] .btn-ghost { color:var(--ink); }
+
+  section { border-top:1px solid var(--rule); }
+  section:first-of-type { border-top:none; }
+  .sec { padding-block:64px; display:grid; grid-template-columns:132px 1fr; gap:0 32px; align-items:start; }
+  .sec-label { font-family:var(--mono); font-size:11px; letter-spacing:0.13em; text-transform:uppercase; color:var(--ink-3); padding-top:6px; border-top:2px solid var(--ink); }
+  .sec-body { min-width:0; }
+  h2 { font-size:clamp(26px, 3.4vw, 38px); line-height:1.1; margin-bottom:14px; }
+  .lede { font-size:19px; color:var(--ink-2); max-width:62ch; margin:0 0 8px; }
+
+  .hero { padding-block:58px 66px; }
+  .hero-grid { display:grid; grid-template-columns:minmax(0, 1.05fr) minmax(0, 0.95fr); gap:46px; align-items:start; }
+  .hero h1 { font-size:clamp(34px, 5.4vw, 58px); line-height:1.02; font-weight:800; letter-spacing:-0.028em; margin:18px 0 20px; }
+  .hero h1 em { font-style:normal; color:var(--accent); }
+  .hero p { font-size:19.5px; max-width:46ch; color:var(--ink-2); margin:0 0 26px; }
+  .hero-grid > *, .calc > * { min-width:0; }
+  .hero-cta { display:flex; gap:12px; flex-wrap:wrap; }
+  .hero-note { font-family:var(--mono); font-size:12px; color:var(--ink-3); margin-top:20px; letter-spacing:0.01em; }
+
+  .tieout { background:var(--surface); border:1px solid var(--rule-2); font-family:var(--mono); font-size:11.5px; font-variant-numeric:tabular-nums; }
+  .tieout-head { display:flex; justify-content:space-between; align-items:baseline; padding:12px 14px; border-bottom:1px solid var(--rule); color:var(--ink-2); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; }
+  .tieout-scroll { overflow-x:auto; }
+  .tieout table { border-collapse:collapse; width:100%; min-width:396px; }
+  .tieout th { text-align:left; font-weight:500; color:var(--ink-3); font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; padding:9px 10px; border-bottom:1px solid var(--rule); }
+  .tieout td { padding:7px 10px; border-bottom:1px solid var(--rule); white-space:nowrap; }
+  .tieout td.num { text-align:right; }
+  .tieout tr.brk td { background:var(--accent-soft); }
+  .tieout tr.aging td { background:var(--warn-soft); }
+  .chip { display:inline-block; font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase; padding:2px 6px; border:1px solid currentColor; line-height:1.4; }
+  .chip.ok { color:var(--ok); } .chip.brk { color:var(--accent); } .chip.age { color:var(--warn); }
+  .tieout-foot { padding:11px 14px; border-top:2px solid var(--ink); display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; font-size:11.5px; color:var(--ink-2); }
+  .tieout-foot b { color:var(--ink); font-weight:600; }
+  .tieout-cap { font-family:var(--mono); font-size:11px; color:var(--ink-3); margin-top:10px; line-height:1.5; }
+
+  .symptoms { list-style:none; padding:0; margin:22px 0 0; display:grid; grid-template-columns:repeat(auto-fit, minmax(290px, 1fr)); gap:0 40px; }
+  .symptoms li { display:grid; grid-template-columns:22px 1fr; gap:10px; padding:13px 0; border-bottom:1px solid var(--rule); font-size:16.5px; line-height:1.5; }
+  .symptoms li::before { content:"\00D7"; font-family:var(--mono); color:var(--accent); font-size:15px; line-height:1.6; }
+
+  .offers { margin-top:26px; border-top:2px solid var(--ink); }
+  .offer { display:grid; grid-template-columns:44px minmax(0,1fr) 170px; gap:8px 22px; padding:22px 0; border-bottom:1px solid var(--rule); align-items:start; }
+  .offer-no { font-family:var(--mono); font-size:12px; color:var(--ink-3); padding-top:5px; letter-spacing:0.06em; }
+  .offer h3 { font-size:21px; font-weight:700; margin-bottom:4px; }
+  .offer p { margin:4px 0 0; color:var(--ink-2); font-size:16.5px; max-width:58ch; }
+  .offer-meta { font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-3); margin-top:8px; }
+  .offer-price { text-align:right; font-family:var(--mono); font-variant-numeric:tabular-nums; }
+  .offer-price .amt { font-size:19px; font-weight:600; color:var(--ink); display:block; letter-spacing:-0.01em; }
+  .offer-price .unit { font-size:11px; color:var(--ink-3); letter-spacing:0.08em; text-transform:uppercase; display:block; margin-top:4px; }
+  .offers-note { font-size:16px; color:var(--ink-2); margin:18px 0 0; padding-left:0; max-width:60ch; }
+
+  .deliv { margin:24px 0 0; }
+  .deliv-row { display:grid; grid-template-columns:minmax(0, 240px) minmax(0, 1fr); gap:6px 32px; padding:18px 0; border-bottom:1px solid var(--rule); }
+  .deliv-row:first-child { border-top:1px solid var(--rule); }
+  .deliv-row dt { font-family:var(--display); font-variation-settings:"wdth" 110; font-weight:600; font-size:17px; letter-spacing:-0.005em; }
+  .deliv-row dd { margin:0; color:var(--ink-2); font-size:16.5px; }
+  .callout { margin-top:26px; padding:18px 20px; background:var(--sunk); border-left:3px solid var(--accent); font-size:16.5px; max-width:66ch; }
+  .callout b { font-family:var(--display); font-variation-settings:"wdth" 110; font-weight:600; }
+
+  .calc { display:grid; grid-template-columns:minmax(0, 300px) minmax(0, 1fr); gap:34px; margin-top:26px; align-items:start; }
+  .field { margin-bottom:18px; }
+  .field label { display:block; font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-2); margin-bottom:6px; }
+  .field-row { display:flex; align-items:center; gap:12px; }
+  .field input[type="number"] { width:100%; font-family:var(--mono); font-size:16px; font-variant-numeric:tabular-nums; padding:9px 11px; background:var(--surface); color:var(--ink); border:1px solid var(--rule-2); border-radius:0; }
+  .field input[type="range"] { width:100%; accent-color:var(--accent); }
+  .field .val { font-family:var(--mono); font-size:16px; font-variant-numeric:tabular-nums; min-width:52px; text-align:right; }
+  .tape { background:var(--surface); border:1px solid var(--rule-2); font-family:var(--mono); font-variant-numeric:tabular-nums; }
+  .tape-head { padding:11px 16px; border-bottom:1px solid var(--rule); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-2); }
+  .tape-line { display:flex; justify-content:space-between; gap:16px; padding:10px 16px; border-bottom:1px solid var(--rule); font-size:13.5px; }
+  .tape-line .lbl { color:var(--ink-2); }
+  .tape-line .fig { font-weight:500; }
+  .tape-total { display:flex; justify-content:space-between; gap:16px; align-items:baseline; padding:16px; border-top:2px solid var(--ink); border-bottom:2px solid var(--ink); }
+  .tape-total .lbl { font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-2); }
+  .tape-total .fig { font-family:var(--display); font-variation-settings:"wdth" 110; font-weight:800; font-size:clamp(28px, 4.6vw, 40px); letter-spacing:-0.03em; color:var(--accent); line-height:1; }
+  .tape-foot { padding:12px 16px; font-size:11.5px; color:var(--ink-3); line-height:1.55; }
+
+  .days { margin-top:26px; border-top:2px solid var(--ink); }
+  .day { display:grid; grid-template-columns:128px minmax(0, 1fr); gap:6px 24px; padding:16px 0; border-bottom:1px solid var(--rule); }
+  .day-key { font-family:var(--mono); font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent); padding-top:2px; }
+  .day-body { font-size:16.5px; }
+  .day-body b { font-family:var(--display); font-variation-settings:"wdth" 110; font-weight:600; display:block; font-size:17px; }
+  .day-body span { color:var(--ink-2); }
+
+  .fit { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:34px; margin-top:24px; }
+  .fit h3 { font-size:13px; font-family:var(--mono); font-weight:600; letter-spacing:0.12em; text-transform:uppercase; padding-bottom:8px; border-bottom:2px solid var(--ink); margin-bottom:4px; }
+  .fit ul { list-style:none; margin:0; padding:0; }
+  .fit li { padding:11px 0; border-bottom:1px solid var(--rule); font-size:16.5px; color:var(--ink-2); }
+  .fit .yes li::before { content:"\2713  "; color:var(--ok); font-family:var(--mono); }
+  .fit .no li::before { content:"\2014  "; color:var(--ink-3); font-family:var(--mono); }
+
+  .bio p { max-width:62ch; font-size:17.5px; }
+  .bio p + p { margin-top:14px; }
+
+  .faq { margin-top:22px; border-top:1px solid var(--rule); }
+  .faq details { border-bottom:1px solid var(--rule); }
+  .faq summary { cursor:pointer; padding:16px 0; font-family:var(--display); font-variation-settings:"wdth" 110; font-weight:600; font-size:17.5px; list-style:none; display:flex; justify-content:space-between; gap:16px; align-items:baseline; }
+  .faq summary::-webkit-details-marker { display:none; }
+  .faq summary::after { content:"+"; font-family:var(--mono); color:var(--accent); font-size:18px; flex:none; }
+  .faq details[open] summary::after { content:"\2013"; }
+  .faq .ans { padding:0 0 18px; color:var(--ink-2); max-width:64ch; font-size:16.5px; }
+
+  .close { background:var(--sunk); border-top:1px solid var(--rule); }
+  .close .wrap { padding-block:62px; }
+  .close h2 { font-size:clamp(28px, 4.2vw, 44px); max-width:20ch; }
+  .close p { font-size:19px; color:var(--ink-2); max-width:52ch; margin:16px 0 26px; }
+  .close-cta { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+  .close-mail { font-family:var(--mono); font-size:14px; color:var(--ink-2); text-decoration:none; border-bottom:1px solid var(--rule-2); }
+  .close-mail:hover { color:var(--accent); border-color:var(--accent); }
+
+  footer { border-top:1px solid var(--rule); background:var(--paper); }
+  footer .wrap { padding-block:26px 40px; display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; font-family:var(--mono); font-size:11.5px; color:var(--ink-3); letter-spacing:0.04em; }
+
+  @media (max-width: 860px) {
+    .sec { grid-template-columns:1fr; gap:18px; }
+    .sec-label { border-top:none; border-bottom:2px solid var(--ink); padding:0 0 6px; }
+    .hero-grid { grid-template-columns:1fr; gap:34px; }
+    .calc { grid-template-columns:1fr; }
+    .offer { grid-template-columns:32px minmax(0,1fr); }
+    .offer-price { grid-column:2; text-align:left; margin-top:10px; }
+    .offer-price .amt { display:inline; }
+    .offer-price .unit { display:inline; margin-left:8px; }
+    .deliv-row { grid-template-columns:1fr; }
+    .day { grid-template-columns:1fr; }
+  }
+  @media (max-width: 480px) { :root { --gut:18px; } body { font-size:16px; } }
+  @media (prefers-reduced-motion: reduce) { * { transition:none !important; animation:none !important; } }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="mark">TieOut Ops<span>Payment operations &middot; reconciliation &middot; Edgar Dacto</span></div>
+    <a class="btn" href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3idGh-b99Gw93zyxhPrIsACtVvmeuakC561EWnw53JhA624-m8Z8KfHP0qDJFWBdQ3-6mJsZDW" target="_blank" rel="noopener">Book a 20-minute call</a>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">For fintechs, marketplaces and platforms moving other people&rsquo;s money</div>
+        <h1>Your ledger and your bank <em>stopped agreeing</em> three months ago.</h1>
+        <p>I find where money, data and ownership diverge across your processor, your bank and your ledger. Then I rebuild the process so close takes days instead of weeks, without adding headcount.</p>
+        <div class="hero-cta">
+          <a class="btn" href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3idGh-b99Gw93zyxhPrIsACtVvmeuakC561EWnw53JhA624-m8Z8KfHP0qDJFWBdQ3-6mJsZDW" target="_blank" rel="noopener">Book a 20-minute call</a>
+          <a class="btn btn-ghost" href="#audit">See what the audit covers</a>
+        </div>
+        <div class="hero-note">Fixed scope. Fixed fee. First report in 14 days.</div>
+      </div>
+
+      <div>
+        <div class="tieout">
+          <div class="tieout-head"><span>Settlement tie-out</span><span>Bank vs ledger</span></div>
+          <div class="tieout-scroll">
+            <table>
+              <thead>
+                <tr><th>Date</th><th>Reference</th><th class="num">Bank</th><th class="num">Ledger</th><th>State</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>08&#8209;28</td><td>PAYOUT&#8209;4471</td><td class="num">412,880.14</td><td class="num">412,880.14</td><td><span class="chip ok">Match</span></td></tr>
+                <tr><td>08&#8209;28</td><td>ACH&#8209;RET&#8209;R01</td><td class="num">&minus;1,240.00</td><td class="num">&minus;1,240.00</td><td><span class="chip ok">Match</span></td></tr>
+                <tr class="brk"><td>08&#8209;29</td><td>PAYOUT&#8209;4472</td><td class="num">198,404.77</td><td class="num">198,912.03</td><td><span class="chip brk">Break</span></td></tr>
+                <tr><td>08&#8209;29</td><td>FEE&#8209;PROC&#8209;08</td><td class="num">&minus;9,118.62</td><td class="num">&minus;9,118.62</td><td><span class="chip ok">Match</span></td></tr>
+                <tr class="aging"><td>07&#8209;03</td><td>REV&#8209;0093</td><td class="num">&mdash;</td><td class="num">3,506.00</td><td><span class="chip age">63d</span></td></tr>
+                <tr><td>08&#8209;30</td><td>PAYOUT&#8209;4473</td><td class="num">376,551.20</td><td class="num">376,551.20</td><td><span class="chip ok">Match</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="tieout-foot">
+            <span>Auto&#8209;match rate <b>94.2%</b></span>
+            <span>Open breaks <b>41</b></span>
+            <span>Oldest <b>63 days</b></span>
+          </div>
+        </div>
+        <div class="tieout-cap">Illustration, not a client file. Two of these six rows are the reason someone in your finance team works Saturdays at month end.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap sec">
+      <div class="sec-label">Symptoms</div>
+      <div class="sec-body">
+        <h2>You probably recognize at least three of these</h2>
+        <p class="lede">None of them look urgent on their own. Together they are the reason your close date keeps sliding and your auditor keeps asking the same question.</p>
+        <ul class="symptoms">
+          <li>Month&#8209;end close slips past day ten, every month, and nobody can say exactly which step is the bottleneck.</li>
+          <li>One person maintains the spreadsheet that ties processor payouts to the bank, and everything stops when they take PTO.</li>
+          <li>ACH returns and chargebacks get worked out of an inbox instead of a queue, so aging is invisible until it is large.</li>
+          <li>The bank, the processor and the ledger each report a different number for the same day, and reconciling them is a person, not a control.</li>
+          <li>A reversal posts to the wrong account and gets found six weeks later by accident.</li>
+          <li>Your auditor asks for a control narrative for payment operations and there is nothing written down.</li>
+          <li>Engineering has &ldquo;reconciliation tooling&rdquo; on the roadmap for the fourth quarter running.</li>
+          <li>You are about to add a currency, a rail or a partner bank, and nobody wants to be the one who says the current process will not hold.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="offers">
+    <div class="wrap sec">
+      <div class="sec-label">Engagements</div>
+      <div class="sec-body">
+        <h2>Three ways to work together, in order</h2>
+        <p class="lede">Every engagement starts at 01. I do not sell a buildout to a company I have not audited, because until I have seen your files I am guessing, and you would be paying for the guess.</p>
+        <div class="offers">
+          <div class="offer">
+            <div class="offer-no">01</div>
+            <div>
+              <h3>Payment Operations Audit</h3>
+              <p>The diagnostic. Read&#8209;only access, one closed month, structured interviews with everyone who touches money movement. You get a current&#8209;state map, a ranked problem list and a 30/60/90 roadmap you can hand to engineering.</p>
+              <div class="offer-meta">2 weeks &middot; fixed fee &middot; no system changes</div>
+            </div>
+            <div class="offer-price"><span class="amt">$7,500</span><span class="unit">flat</span></div>
+          </div>
+          <div class="offer">
+            <div class="offer-no">02</div>
+            <div>
+              <h3>Reconciliation Buildout</h3>
+              <p>I implement the top of the list with your finance and engineering teams: match rules, an exception queue with real aging and ownership, a documented close checklist, and the control narrative your auditor keeps asking for.</p>
+              <div class="offer-meta">4 to 6 weeks &middot; scoped from the audit</div>
+            </div>
+            <div class="offer-price"><span class="amt">$25k &ndash; $45k</span><span class="unit">per project</span></div>
+          </div>
+          <div class="offer">
+            <div class="offer-no">03</div>
+            <div>
+              <h3>Fractional Payment Operations</h3>
+              <p>I own the function on an ongoing basis: exceptions, close, processor and bank relationships, and the operating standard for new rails and markets. Until you are ready to hire a senior operator full time, or instead of it.</p>
+              <div class="offer-meta">Monthly &middot; typically 2 days a week</div>
+            </div>
+            <div class="offer-price"><span class="amt">$10k &ndash; $15k</span><span class="unit">per month</span></div>
+          </div>
+        </div>
+        <p class="offers-note">Pricing is deliberately below what a firm charges for the same scope. You are buying one operator with hands on the files, not a team of analysts learning your business on your budget.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="audit">
+    <div class="wrap sec">
+      <div class="sec-label">The audit</div>
+      <div class="sec-body">
+        <h2>What you get in fourteen days</h2>
+        <p class="lede">A document your CFO can act on and your engineering lead will not dismiss. Five parts.</p>
+        <dl class="deliv">
+          <div class="deliv-row">
+            <dt>Current&#8209;state money map</dt>
+            <dd>Every path funds take from customer authorization to settlement to payout, with the system, file and owner at each hop. Card processor reports, BAI2 or MT940 bank files, sponsor bank statements, ledger entries.</dd>
+          </div>
+          <div class="deliv-row">
+            <dt>Reconciliation and control review</dt>
+            <dd>What matches automatically, what a person matches by hand, and what does not match at all. Aging of open breaks, plus where a break could sit undetected and for how long.</dd>
+          </div>
+          <div class="deliv-row">
+            <dt>Exception inventory</dt>
+            <dd>Every exception type you actually generate: returns by code, chargebacks, reversals, duplicate settlements, FX rounding, partial captures. Who works each one, how long it takes, and what happens when that person is out.</dd>
+          </div>
+          <div class="deliv-row">
+            <dt>Automation shortlist</dt>
+            <dd>Ranked by finance hours returned per engineering week spent, so the roadmap conversation stops being a matter of opinion. Includes the items you should not automate yet, and why.</dd>
+          </div>
+          <div class="deliv-row">
+            <dt>30/60/90 roadmap</dt>
+            <dd>Sequenced, with a named owner and a definition of done for each item. Written so it survives my leaving.</dd>
+          </div>
+        </dl>
+        <div class="callout"><b>What I need from you:</b> read access to one closed month of settlement reports and bank statements, your chart of accounts, and 45 minutes each with the four or five people who touch the process. No production access, no customer PII, no code changes.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="math">
+    <div class="wrap sec">
+      <div class="sec-label">The math</div>
+      <div class="sec-body">
+        <h2>What manual reconciliation costs you right now</h2>
+        <p class="lede">Change the numbers to yours. This is the conversation we would have on the call anyway, so you may as well have it before we speak.</p>
+        <div class="calc">
+          <form id="calcForm" onsubmit="return false;">
+            <div class="field">
+              <label for="people">People touching reconciliation and exceptions</label>
+              <input id="people" type="number" min="1" max="60" step="1" value="6">
+            </div>
+            <div class="field">
+              <label for="hours">Hours per person per week on it</label>
+              <input id="hours" type="number" min="1" max="40" step="1" value="10">
+            </div>
+            <div class="field">
+              <label for="rate">Fully loaded cost per hour (USD)</label>
+              <input id="rate" type="number" min="15" max="400" step="5" value="75">
+            </div>
+            <div class="field">
+              <label for="cut">Share of that work removed</label>
+              <div class="field-row">
+                <input id="cut" type="range" min="10" max="90" step="5" value="60">
+                <span class="val" id="cutVal">60%</span>
+              </div>
+            </div>
+          </form>
+          <div class="tape">
+            <div class="tape-head">Working</div>
+            <div class="tape-line"><span class="lbl">Hours per month on manual reconciliation</span><span class="fig" id="hrsMo">87</span></div>
+            <div class="tape-line"><span class="lbl">Cost of those hours per month</span><span class="fig" id="costMo">$4,333</span></div>
+            <div class="tape-line"><span class="lbl">Hours returned per month</span><span class="fig" id="hrsBack">52</span></div>
+            <div class="tape-line"><span class="lbl">Audit plus buildout, one time</span><span class="fig">$32,500</span></div>
+            <div class="tape-line"><span class="lbl">Pays for itself in</span><span class="fig" id="payback">2.9 months</span></div>
+            <div class="tape-total">
+              <span class="lbl">Recovered per year</span>
+              <span class="fig" id="annual">$31,200</span>
+            </div>
+            <div class="tape-foot">Rough arithmetic on your figures, and deliberately conservative: it prices only labour. It does not price a delayed close, a restatement, a break nobody found, or the senior hire you postpone.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap sec">
+      <div class="sec-label">Sequence</div>
+      <div class="sec-body">
+        <h2>The first two weeks, day by day</h2>
+        <p class="lede">You will know exactly what is happening and when, because the schedule is the same every time.</p>
+        <div class="days">
+          <div class="day"><div class="day-key">Days 1 &ndash; 2</div><div class="day-body"><b>Access and data pull</b><span>Read access to one closed month. Settlement reports, bank files, ledger export, chart of accounts. Nothing touches production.</span></div></div>
+          <div class="day"><div class="day-key">Days 3 &ndash; 5</div><div class="day-body"><b>Interviews</b><span>45 minutes each with finance, ops, and the engineer who gets pinged when a payout looks wrong. I ask what happens, not what is supposed to happen.</span></div></div>
+          <div class="day"><div class="day-key">Days 6 &ndash; 8</div><div class="day-body"><b>Independent tie&#8209;out</b><span>I reconcile that month myself, from the outside, and record every place my numbers and yours part company.</span></div></div>
+          <div class="day"><div class="day-key">Days 9 &ndash; 11</div><div class="day-body"><b>Exception inventory and ranking</b><span>Every exception type, its volume, its owner, its cost. Then the automation shortlist ranked by hours returned per engineering week.</span></div></div>
+          <div class="day"><div class="day-key">Days 12 &ndash; 14</div><div class="day-body"><b>Write&#8209;up</b><span>The map, the findings, the control review, the roadmap. Written for two audiences at once: your CFO and your engineering lead.</span></div></div>
+          <div class="day"><div class="day-key">Day 15</div><div class="day-body"><b>Readout</b><span>90 minutes with finance and engineering in the same room, which for most teams is the first time that has happened about this topic.</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap sec">
+      <div class="sec-label">Fit</div>
+      <div class="sec-body">
+        <h2>Worth a call, and not worth a call</h2>
+        <div class="fit">
+          <div>
+            <h3>Good fit</h3>
+            <ul class="yes">
+              <li>$10M to $500M revenue, 20 to 500 people, growing faster than the finance team is</li>
+              <li>Money moving through Stripe, Adyen, Modern Treasury, a sponsor bank or a combination of all four</li>
+              <li>A finance team of two to ten people, at least one of whom reconciles by hand</li>
+              <li>Preparing for an audit, a new market, a new rail or a diligence process</li>
+              <li>Recently funded, with budget for a fix but not for four more headcount</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Poor fit</h3>
+            <ul class="no">
+              <li>Pre&#8209;revenue, or not yet moving money at volume. There is nothing to reconcile yet</li>
+              <li>Looking for a full&#8209;time hire. Hire one. I will help you write the scorecard if it is useful</li>
+              <li>Hoping to buy a tool rather than fix a process. Tools sit on top of the process, and yours is the problem</li>
+              <li>Wanting a named firm on the invoice for the sake of the name</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap sec">
+      <div class="sec-label">Who</div>
+      <div class="sec-body bio">
+        <h2>Edgar Dacto</h2>
+        <p>I have spent my career inside payments and banking operations: settlement and clearing, processor and sponsor bank relationships, reconciliation build&#8209;outs, and the seam between finance and engineering where most of this actually breaks.</p>
+        <p>I have been the person working the exception queue at nine in the evening on the last day of the month. I have been the person who had to explain to a controller why the bank and the ledger disagreed by four hundred dollars and neither side was wrong. That is the whole qualification, and it is the reason I can tell in one call whether your problem is a matching rule, a data gap or an ownership gap.</p>
+        <p>I work alone, on a small number of engagements at a time, which is why the schedule above is firm and why I say no to work that is not a fit.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap sec">
+      <div class="sec-label">Questions</div>
+      <div class="sec-body">
+        <h2>The four I always get</h2>
+        <div class="faq">
+          <details open>
+            <summary>Do you need production access?<span></span></summary>
+            <div class="ans">No. The audit runs on exported files: settlement reports, bank statements, a ledger export, a chart of accounts. No production access, no write access, no customer PII. If your security team wants to review the list before we start, send it to them first.</div>
+          </details>
+          <details>
+            <summary>What if you find nothing?<span></span></summary>
+            <div class="ans">Then you have a written current&#8209;state map, a control narrative and a documented match rate, which is exactly what your auditor and your next diligence process will ask for and what almost nobody has. That has value on its own. It has also never happened.</div>
+          </details>
+          <details>
+            <summary>Do you work with our engineers or around them?<span></span></summary>
+            <div class="ans">With them, and the readout is designed for it. Engineering usually knows the reconciliation problem is real and has been unable to get it prioritized against revenue work. A ranked list with hours returned per engineering week is the argument they have been missing.</div>
+          </details>
+          <details>
+            <summary>Why is this cheaper than the firm we spoke to?<span></span></summary>
+            <div class="ans">Because a firm has to staff a team, and the team has to learn your business at your expense before anyone is useful. The scope here is narrow on purpose, I do the work myself, and I would rather be the person you call three times over two years than the invoice you regret once.</div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="close" id="book">
+    <div class="wrap">
+      <div class="eyebrow">Next step</div>
+      <h2>Twenty minutes, and you will know whether this is worth doing.</h2>
+      <p>Bring your close calendar and a rough sense of your match rate. If there is nothing here for you, I will say so on the call and we will both save a month.</p>
+      <div class="close-cta">
+        <a class="btn" href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3idGh-b99Gw93zyxhPrIsACtVvmeuakC561EWnw53JhA624-m8Z8KfHP0qDJFWBdQ3-6mJsZDW" target="_blank" rel="noopener">Book a 20-minute call</a>
+        <a class="close-mail" href="mailto:edgar@tieoutops.com">edgar@tieoutops.com</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>TieOut Ops &middot; Payment operations and reconciliation by Edgar Dacto</span>
+    <span>Independent consultant. Not an audit firm and not a licensed financial advisor.</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var f = { people: document.getElementById('people'), hours: document.getElementById('hours'), rate: document.getElementById('rate'), cut: document.getElementById('cut') };
+    var out = { cutVal: document.getElementById('cutVal'), hrsMo: document.getElementById('hrsMo'), costMo: document.getElementById('costMo'), hrsBack: document.getElementById('hrsBack'), payback: document.getElementById('payback'), annual: document.getElementById('annual') };
+    var ENGAGEMENT = 32500;
+    var WEEKS_PER_MONTH = 52 / 12;
+    function money(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
+    function num(el, min, max, fallback) { var v = parseFloat(el.value); if (!isFinite(v)) return fallback; return Math.min(max, Math.max(min, v)); }
+    function recalc() {
+      var people = num(f.people, 1, 60, 4), hours = num(f.hours, 1, 40, 5), rate = num(f.rate, 15, 400, 50), cut = num(f.cut, 10, 90, 60) / 100;
+      var hrsMo = people * hours * WEEKS_PER_MONTH, costMo = hrsMo * rate, hrsBack = hrsMo * cut, recovered = costMo * cut, annual = recovered * 12;
+      var payback = recovered > 0 ? ENGAGEMENT / recovered : Infinity;
+      out.cutVal.textContent = Math.round(cut * 100) + '%';
+      out.hrsMo.textContent = Math.round(hrsMo).toLocaleString('en-US');
+      out.costMo.textContent = money(costMo);
+      out.hrsBack.textContent = Math.round(hrsBack).toLocaleString('en-US');
+      out.annual.textContent = money(annual);
+      if (!isFinite(payback)) out.payback.textContent = 'n/a';
+      else if (payback < 1) out.payback.textContent = 'under a month';
+      else out.payback.textContent = payback.toFixed(1) + ' months';
+    }
+    Object.keys(f).forEach(function (k) { f[k].addEventListener('input', recalc); f[k].addEventListener('change', recalc); });
+    recalc();
+  })();
+</script>
+</body>
+</html>
