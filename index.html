@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>TieOut Ops | Payment operations and reconciliation</title>
 <meta name="description" content="Payment operations and reconciliation consulting for fintechs, marketplaces and platforms. Fixed-scope audit, reconciliation buildout and fractional payment ops.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;110,500;110,600;110,700;110,800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
@@ -41,8 +42,13 @@
 
   .masthead { border-bottom:1px solid var(--rule); background:var(--paper); position:sticky; top:0; z-index:10; }
   .masthead .wrap { display:flex; align-items:center; justify-content:space-between; gap:18px; padding-block:14px; flex-wrap:wrap; }
-  .mark { font-family:var(--display); font-variation-settings:"wdth" 110; font-weight:800; font-size:17px; letter-spacing:0.02em; text-transform:uppercase; line-height:1; }
-  .mark span { display:block; font-family:var(--mono); font-size:10.5px; font-weight:400; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-2); margin-top:5px; }
+  .logo { display:inline-flex; align-items:center; gap:10px; text-decoration:none; color:var(--ink); }
+  .logo-mark { flex:none; display:block; }
+  .logo-mark .bar { fill:var(--ink); }
+  .logo-mark .fix { fill:var(--ok); }
+  .logo-word { font-family:var(--display); font-weight:800; font-size:24px; letter-spacing:-0.025em; line-height:1; }
+  .logo-tag { font-family:var(--mono); font-size:10px; font-weight:500; letter-spacing:0.16em; line-height:1; color:var(--ok); border:1px solid var(--ok); border-radius:3px; padding:4px 5px 3px; }
+  @media (max-width: 480px) { .logo-word { font-size:20px; } .logo-mark { width:28px; height:28px; } }
 
   .btn { font-family:var(--display); font-variation-settings:"wdth" 110; font-weight:600; font-size:14.5px; letter-spacing:0.005em; text-decoration:none; padding:11px 18px; border:1px solid var(--accent); background:var(--accent); color:#FFF6F5; display:inline-block; transition:background .15s ease, color .15s ease; }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn { color:#1A0F0E; } }
@@ -181,7 +187,11 @@
 
 <header class="masthead">
   <div class="wrap">
-    <div class="mark">TieOut Ops<span>Payment operations &middot; reconciliation</span></div>
+    <a class="logo" href="/" aria-label="TieOut Ops home">
+      <svg class="logo-mark" width="34" height="34" viewBox="0 0 48 48" aria-hidden="true"><rect class="bar" x="6" y="14" width="36" height="7" rx="1.5"/><rect class="bar" x="6" y="27" width="13" height="7" rx="1.5"/><rect class="fix" x="20.5" y="27" width="7" height="7" rx="1.5"/><rect class="bar" x="29" y="27" width="13" height="7" rx="1.5"/></svg>
+      <span class="logo-word">TieOut</span>
+      <span class="logo-tag">OPS</span>
+    </a>
     <a class="btn" href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3idGh-b99Gw93zyxhPrIsACtVvmeuakC561EWnw53JhA624-m8Z8KfHP0qDJFWBdQ3-6mJsZDW" target="_blank" rel="noopener">Book a 20-minute call</a>
   </div>
 </header>
